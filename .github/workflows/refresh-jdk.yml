@@ -36,7 +36,7 @@ jobs:
               run: |
                 git checkout nightly
                 git restore --source origin/$LOCAL_BRANCH --staged --worktree -- version.txt
-                git commit -m "Automerged version.txt from $LOCAL_BRANCH to nightly"
+                git commit -m "Automerged version.txt from $LOCAL_BRANCH to nightly" || true
                 git merge origin/$LOCAL_BRANCH
                 git push origin nightly
             - name: "Merge Corretto-21 develop to lilliput"
@@ -44,7 +44,7 @@ jobs:
               run: |
                 git checkout lilliput
                 git restore --source origin/$LOCAL_BRANCH --staged --worktree -- version.txt
-                git commit -m "Automerged version.txt from $LOCAL_BRANCH to lilliput"
+                git commit -m "Automerged version.txt from $LOCAL_BRANCH to lilliput" || true
                 git merge origin/$LOCAL_BRANCH
                 git push origin lilliput
             - name: "Merge openjdk/shenandoah-jdk21u:master to generational-shenandoah"
@@ -59,6 +59,6 @@ jobs:
               run: |
                 git checkout $LOCAL_SHENANDOAH
                 git restore --source origin/$LOCAL_BRANCH --staged --worktree -- version.txt
-                git commit -m "Automerged version.txt from $LOCAL_BRANCH to $LOCAL_SHENANDOAH"
+                git commit -m "Automerged version.txt from $LOCAL_BRANCH to $LOCAL_SHENANDOAH" || true
                 git merge origin/$LOCAL_BRANCH
                 git push origin $LOCAL_SHENANDOAH
