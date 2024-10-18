@@ -12,7 +12,6 @@ jobs:
     refresh-jdk:
         runs-on: ubuntu-latest
         name: "Update Corretto-21"
-        if: github.repository_owner == 'corretto'
         steps:
             - name: "Checkout code"
               uses: actions/checkout@v2
