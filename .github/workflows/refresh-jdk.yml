@@ -34,8 +34,10 @@ jobs:
               run: |
                 git checkout nightly
                 git restore --source origin/$LOCAL_BRANCH --staged --worktree -- version.txt
-                git commit -m "Automerged version.txt from $LOCAL_BRANCH to nightly" || true
+                git commit --allow-empty -m "Ephemeral commit: Automerged version.txt from $LOCAL_BRANCH to nightly"
+                ephemeral_commit=$(git rev-parse HEAD)
                 git merge origin/$LOCAL_BRANCH
+                git rebase --onto ${ephemeral_commit}^ ${ephemeral_commit}
                 git push origin nightly
             - name: "Merge Corretto-21 develop to lilliput"
               shell: bash
