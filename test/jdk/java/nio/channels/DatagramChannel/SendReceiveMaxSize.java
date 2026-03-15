@@ -144,6 +144,8 @@ public class SendReceiveMaxSize {
                     if (sender.getOption(SO_SNDBUF) < capacity)
                         sender.setOption(SO_SNDBUF, capacity);
                 }
+                System.err.println("[testSendReceiveMaxSize] fnord! capacity: " + capacity +
+                                   "; host: " + host);
                 byte[] testData = new byte[capacity];
                 random.nextBytes(testData);
 

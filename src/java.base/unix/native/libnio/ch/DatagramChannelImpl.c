@@ -29,6 +29,9 @@
 #include <stdlib.h>
 #include <string.h>
 #include <errno.h>
+#include <stdio.h>
+
+#include <arpa/inet.h>
 
 #if defined(__linux__) || defined(_ALLBSD_SOURCE)
 #include <netinet/in.h>
@@ -140,13 +143,36 @@ Java_sun_nio_ch_DatagramChannelImpl_send0(JNIEnv *env, jclass clazz,
     SOCKETADDRESS *sa = (SOCKETADDRESS *)jlong_to_ptr(targetAddress);
     socklen_t sa_len = (socklen_t) targetAddressLen;
     jint n;
+    struct sockaddr* skadr = (struct sockaddr*) sa;
+    char sb[INET6_ADDRSTRLEN > INET_ADDRSTRLEN ? INET6_ADDRSTRLEN : INET_ADDRSTRLEN];
+    /* char sb[INET_ADDRSTRLEN] = '\0'; */
+    /* char sb6[INET6_ADDRSTRLEN] = '\0'; */
 
     if (len > MAX_PACKET_LEN) {
         len = MAX_PACKET_LEN;
     }
 
+    fprintf(stderr, "FNORD: len: %d; targetAddressLen: %d\n", len, targetAddressLen);
+    switch(skadr->sa_family) {
+    case AF_INET: {
+        sb[INET_ADDRSTRLEN] = '\0';
+        struct sockaddr_in* addr_in = (struct sockaddr_in *) sa;
+        inet_ntop(AF_INET, &(addr_in->sin_addr), sb, INET_ADDRSTRLEN);
+        fprintf(stderr, "  IPV4 addr: %s\n", sb);
+        break;
+    }
+    case AF_INET6: {
+        sb[INET6_ADDRSTRLEN] = '\0';
+        struct sockaddr_in6* addr_in = (struct sockaddr_in6 *) sa;
+        inet_ntop(AF_INET6, &(addr_in->sin6_addr), sb, INET6_ADDRSTRLEN);
+        fprintf(stderr, "  IPV6 addr: %s\n", sb);
+        break;
+    }
+    }
+
     n = sendto(fd, buf, len, 0, (struct sockaddr *)sa, sa_len);
     if (n < 0) {
+        fprintf(stderr, "  ! got error: %s\n", strerror(errno));
         if (errno == EAGAIN || errno == EWOULDBLOCK) {
             return IOS_UNAVAILABLE;
         }
